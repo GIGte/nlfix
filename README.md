@@ -16,6 +16,13 @@ Available options are:
 -nolog        hide logs (can increase speed)
 ```
 
+Sample use:
+```
+> nlfix.exe "C:\mydir" "txt;h;cpp" -mode unix
+```
+
+Recognisable names: *tounix.exe*, *todos.exe*, *tomac.exe*
+
 ##Requirements
  - WINDOWS ONLY
  - The solution and project files included are for Visual Studio 2013 (you can use any compiler, though)
