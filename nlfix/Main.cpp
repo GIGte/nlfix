@@ -2,6 +2,8 @@
 **	Copyright (c) 2015 GIG <bigig@live.ru>
 */
 
+#pragma warning(disable: 4996)
+
 #include <stdio.h>
 #include <string.h>
 
@@ -31,18 +33,18 @@
 
 bool	SearchFiles;
 
-char *searchpath;
-char *extensions;
-
 int		Mode;
 bool	SkipErrors	= false;
-bool	ShowLogs	= true;
+bool	ShowLogs = true;
 
-HANDLE tempfile;
-char tempfile_name[MAX_PATH];
+const char	*searchpath;
+const char	*extensions;
+
+HANDLE	tempfile;
+char	tempfile_name[MAX_PATH];
 
 
-bool findFlag(char *name, int argc, char *argv[])
+bool findFlag(const char *name, int argc, char *const argv[])
 {
 	while (--argc > 0)
 	{
@@ -55,7 +57,7 @@ bool findFlag(char *name, int argc, char *argv[])
 	return false;
 }
 
-char *findParam(char *name, int argc, char *argv[])
+const char *findParam(const char *name, int argc, char *const argv[])
 {
 	while (--argc > 1)
 	{
@@ -68,7 +70,7 @@ char *findParam(char *name, int argc, char *argv[])
 	return NULL;
 }
 
-int error(char *errormsg)
+int error(const char *errormsg)
 {
 	fprintf(stderr, "%s\n", errormsg);
 	return 1;
@@ -115,7 +117,7 @@ typedef struct SimpleStack
 	}
 } SimpleStack;
 
-stackentry *new_entry(char *name, bool isfirst)//stackentry *parent)
+stackentry *new_entry(const char *name, bool isfirst)//stackentry *parent)
 {
 	stackentry *entry = new stackentry();
 	strncpy(entry->name, name, NLF_MAXFILENAME);//entry->name = name;
@@ -139,14 +141,14 @@ int processArgs(int argc, char *argv[])
 
 	}
 
-	char *param;
+	const char *param;
 
 	{
 		param = findParam("-mode", argc, argv);
 
 		if (param == NULL)
 		{
-			char *program_name = strrchr(argv[0], DIRSEP) + 1;
+			const char *program_name = strrchr(argv[0], DIRSEP) + 1;
 
 			if (memcmp(program_name, "tounix", 6) == 0)
 				Mode = MODE_UNIX;
@@ -205,7 +207,7 @@ void deleteTempFile()
 	DeleteFileA(tempfile_name); // FILE_FLAG_DELETE_ON_CLOSE?
 }
 
-bool replaceFile(char *topath, char *frompath)
+bool replaceFile(const char *topath, const char *frompath)
 {
 	/*if (!CloseHandle(tempfile))
 		puts("fcl");
@@ -300,11 +302,11 @@ bool replaceFile(char *topath, char *frompath)
 	return true;
 }*/
 
-bool flushBuffer(char *buffer, DWORD length)
+bool flushBuffer(const char *buffer, DWORD size)
 {
 	DWORD bytes;
 
-	if (!WriteFile(tempfile, buffer, length, &bytes, NULL))
+	if (!WriteFile(tempfile, buffer, size, &bytes, NULL))
 	{
 		printf("%d\n", GetLastError());
 		return false;
@@ -313,13 +315,13 @@ bool flushBuffer(char *buffer, DWORD length)
 	return true;
 }
 
-bool writeBuffer(char *inbuf, char *outbuf, DWORD length, DWORD *posp, bool isfinal)
+bool writeBuffer(const char *inbuf, char *outbuf, DWORD size, DWORD *posp, bool isfinal)
 {
 	DWORD pos = *posp;
 
 	char c, lastc = '\0';
 
-	while (length-- > 0)
+	while (size-- > 0)
 	{
 		c = *inbuf++;
 
@@ -374,7 +376,7 @@ bool writeBuffer(char *inbuf, char *outbuf, DWORD length, DWORD *posp, bool isfi
 	return true;
 }
 
-bool processFile(char *path)
+bool processFile(const char *path)
 {
 	HANDLE hfile = CreateFileA(path, GENERIC_READ, FILE_SHARE_READ,
 		NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
@@ -441,11 +443,11 @@ reading_failed:
 	return false;
 }
 
-bool checkExtension(char *filename, char *extensions)
+bool checkExtension(const char *filename, const char *extensions)
 {
 	// TODO: masks instead of extensions
 
-	char *ext = strchr(filename, '.') + 1;
+	const char *ext = strchr(filename, '.') + 1;
 
 	if (ext == (char *)1) // no extension
 		return false;
@@ -482,7 +484,7 @@ bool checkExtension(char *filename, char *extensions)
 	return false;
 }
 
-int searchRecursive(char *root, char *allowed_extensions)
+int searchRecursive(const char *root, const char *allowed_extensions)
 {
 	SimpleStack stack;
 
@@ -529,7 +531,7 @@ int searchRecursive(char *root, char *allowed_extensions)
 
 				if (allowed_extensions[0] != '\0')
 				{
-					if (!checkExtension(ffd.cFileName, extensions))
+					if (!checkExtension(ffd.cFileName, allowed_extensions))
 						continue;
 				}
 
@@ -601,7 +603,7 @@ int main(int argc, char *argv[])
 			"Available options are: \n"
 			"  -mode         EOL mode (unix, dos, mac)\n"
 			"  -skiperrors   skip any errors when processing files\n"
-			"  -nolog        hide logs (can increase speed)\n"
+			"  -nolog        hide logs (can increase speed)"
 			// TODO:
 			//"  -depth        max directory depth (-1 by default)\n"
 			//"  -b            make backups\n"
