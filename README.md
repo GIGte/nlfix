@@ -21,7 +21,7 @@ Sample use:
 > nlfix.exe "C:\mydir" "txt;h;cpp" -mode unix
 ```
 
-Recognisable names: *tounix.exe*, *todos.exe*, *tomac.exe*
+Recognised names: *tounix.exe*, *todos.exe*, *tomac.exe*
 
 ##Requirements
  - WINDOWS ONLY
