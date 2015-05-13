@@ -3,7 +3,7 @@ Some simple program to post on GitHub.
 
 It was started as a elementary newline converter, as I had some problems with extisting solutions.
 
-Worth saying, that it's written with a BAD approach (mostly because it took far more time than it could), and it is not an example of a practical coding. (E.g. many classes from the standrard library could be used.)
+Worth saying that it's written with a BAD approach, and it is not an example of a practical coding. (E.g. many classes from the standrard library could be used.)
 
 ## How-To
 Help output:
